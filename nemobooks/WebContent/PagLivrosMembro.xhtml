@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Livros do Membro</title>
+	
+
+</h:head>
+<h:body onload="#{manageMemberBooksController.iniciar()}"
+	styleClass="fundo">
+	<style>
+	
+.fundo{
+	background-image:url('imagens/pegarlivro.jpg');
+	background-position: center;    
+    background-attachment: fixed; 
+}
+.titulo {
+	font-weight: bold;
+	font-size: 24px;
+	font-family: Arial;
+	color: white;
+}
+
+.botao {
+	font-weight: bold;
+	font-size: 20px;
+	font-family: Arial;
+	color: black;
+}
+
+.msg {
+	font-size: 18px;
+	font-family: Arial;
+	color: black;
+	font-weight: bold;
+}
+
+.msgErro {
+	font-size: 14px;
+	font-family: Arial;
+}
+
+.coluna {
+	font-size: 18px;
+	font-family: Arial;
+	font-weight: bold;
+}
+
+.footer {
+	position:absolute;
+	bottom:0;
+	width:99%;
+}
+
+.texto {
+	font-size: 18px;
+	font-family: Arial;
+}
+</style>
+
+
+	<rich:toolbar itemSeparator="grid" style="height:35px;">
+		<rich:toolbarGroup>
+			<a4j:commandButton style="height:25px; width:230px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaLivrosMembro}" execute="@this"
+				value="Controle de Empréstimos" />
+			<a4j:commandButton style="height:25px; width:130px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaHistorico}" execute="@this"
+				value="Histórico" />
+		</rich:toolbarGroup>
+
+		<rich:toolbarGroup location="right">
+			<h:outputText styleClass="botao"
+				value="Usuário conectado: #{manageUsersController.membro}" />
+			<a4j:commandButton style="height:25px; width:150px; font-size:16px"
+				styleClass="botao" type="button" action="#{manageUsersController.abrirPaginaAlterarSenha}"
+				execute="@this" value="Alterar Senha" />
+			<a4j:commandButton style="height:25px; width:100px; font-size:16px"
+				styleClass="botao" type="button" action="#{manageUsersController.logout}"
+				execute="@this" value="Logout" />
+		</rich:toolbarGroup>
+	</rich:toolbar>
+
+	<br />
+	<div align="center">
+		<rich:panel
+			style="color:black; width:1200px; background-image:url('imagens/headBg.png');">
+			<div align="center">
+
+				<h:outputText styleClass="titulo" value="SEUS LIVROS EM EMPRESTIMO"></h:outputText>
+
+			</div>
+			<br />
+
+			<a4j:status onstart="#{rich:component('popupProcessando')}.show()"
+				onstop="#{rich:component('popupProcessando')}.hide()" />
+			<div align="center">
+				<h:form id="form">
+					<h:panelGrid columns="3">
+						<rich:panel>
+							<rich:dataTable value="#{manageMemberBooksController.livrosCadastrados}" var="livro"
+								iterationStatusVar="itAL" id="tableLivrosCadastrados" rows="15">
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="ISBN" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{livro.isbn}" styleClass="texto"/>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Titulo" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{livro.titulo}" styleClass="texto"/>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Ano" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{livro.ano}" styleClass="texto"/>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Consultar" styleClass="coluna"/>
+									</f:facet>
+									<a4j:commandLink styleClass="no-decor"
+										render="formularioConsulta" execute="@this"
+										oncomplete="#{rich:component('formularioConsulta')}.show()">
+										<h:graphicImage value="imagens/consulta.gif" alt="consulte"/>
+										<f:setPropertyActionListener
+											target="#{manageMemberBooksController.livroConsulta}" value="#{livro}" />
+									</a4j:commandLink>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Empréstimo" styleClass="coluna"/>
+									</f:facet>
+									<a4j:commandLink styleClass="no-decor" execute="@this"
+										oncomplete="#{rich:component('popupConfirmacaoEmprestimo')}.show()"
+										>
+										<h:graphicImage value="imagens/ok.gif" alt="emprestimo"/>
+										<a4j:param value="#{itAL.index}"
+											assignTo="#{manageMemberBooksController.indiceEmprestimo}" />	
+									</a4j:commandLink>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller page="#{manageMemberBooksController.page2}" />
+								</f:facet>
+							</rich:dataTable>
+						</rich:panel>
+						
+						<h:outputText value="  "/>
+						
+						<rich:panel>
+							<rich:dataTable value="#{manageMemberBooksController.emprestimos}" var="emprestimo"
+								iterationStatusVar="itAC" id="tableLivrosEmprestados" rows="15">
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="ISBN" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{emprestimo.livro.isbn}" styleClass="texto"/>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Titulo" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{emprestimo.livro.titulo}" styleClass="texto"/>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Ano" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{emprestimo.livro.ano}" styleClass="texto"/>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Consultar" styleClass="coluna"/>
+									</f:facet>
+									<a4j:commandLink styleClass="no-decor"
+										render="formularioConsulta" execute="@this"
+										oncomplete="#{rich:component('formularioConsulta')}.show()">
+										<h:graphicImage value="imagens/consulta.gif" alt="consulte" />
+										<f:setPropertyActionListener
+											target="#{manageMemberBooksController.livroConsulta}" value="#{emprestimo.livro}" />
+									</a4j:commandLink>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Devolução" styleClass="coluna"/>
+									</f:facet>
+									<a4j:commandLink styleClass="no-decor" execute="@this"										
+										oncomplete="#{rich:component('popupConfirmacaoDevolucao')}.show()"
+										>	
+										<h:graphicImage value="imagens/ok.gif" alt="consulte"/>
+										<a4j:param value="#{itAC.index}"
+											assignTo="#{manageMemberBooksController.indiceDevolucao}" />
+									</a4j:commandLink>
+								</rich:column>	
+								<f:facet name="footer">
+									<rich:dataScroller page="#{manageMemberBooksController.page1}" />
+								</f:facet>
+							</rich:dataTable>
+						</rich:panel>		
+					</h:panelGrid>
+
+					<rich:popupPanel id="popupProcessando" autosized="true">
+						<h:graphicImage value="imagens/processando.gif" alt="ai" />
+	           			<h:outputText value="Processando..." styleClass="texto"/>
+	        </rich:popupPanel>
+
+			<rich:popupPanel id="popupConfirmacaoDevolucao" autosized="true">
+	           	<f:facet name="header">
+	            	<h:outputText styleClass="coluna" style="font-size:18px" value="Deseja mesmo devolver o livro?" />
+	        	</f:facet>
+	        	<div align="center">
+		           	<h:panelGrid columns="3" id="confirmacaoDevolucaoBotoes">
+						<a4j:commandButton execute="@this"
+						value = "Sim"										
+						action="#{manageMemberBooksController.devolverLivro}"
+						render="tableLivrosEmprestados,tableLivrosCadastrados,mensagem"
+						immediate="true"
+						style="font-size:16px; width:100px; height:30px"
+						styleClass="botao"
+						oncomplete="#{rich:component('popupConfirmacaoDevolucao')}.hide()"
+						/>	
+						<h:outputText value="  "/>
+						<a4j:commandButton value="Não" style="font-size:16px; width:100px; height:30px"
+							styleClass="botao"
+							onclick="#{rich:component('popupConfirmacaoDevolucao')}.hide(); return false;" />
+					</h:panelGrid>
+				</div>
+			</rich:popupPanel>
+			
+			<rich:popupPanel id="popupConfirmacaoEmprestimo" autosized="true">
+	           	<f:facet name="header">
+	            	<h:outputText styleClass="coluna" style="font-size:18px" value="Deseja mesmo pegar o livro emprestado?" />
+	        	</f:facet>
+	        	<div align="center">
+		           	<h:panelGrid columns="3" id="confirmacaoEmprestimoBotoes">
+						<a4j:commandButton execute="@this"
+						value = "Sim"										
+						action="#{manageMemberBooksController.pegarLivroEmprestado}"
+						render="tableLivrosEmprestados,tableLivrosCadastrados,mensagem"
+						immediate="true"
+						style="font-size:16px; width:100px; height:30px"
+						styleClass="botao"
+						oncomplete="#{rich:component('popupConfirmacaoEmprestimo')}.hide()"
+						/>	
+						<h:outputText value="  "/>
+						<a4j:commandButton value="Não" style="font-size:16px; width:100px; height:30px"
+							styleClass="botao"
+							onclick="#{rich:component('popupConfirmacaoEmprestimo')}.hide(); return false;" />
+					</h:panelGrid>
+				</div>
+			</rich:popupPanel>
+
+					<!-- FORMULARIO CONSULTA LIVRO-->
+
+					<rich:popupPanel header="Dados Livro" id="formularioConsulta"
+						domElementAttachment="parent" width="520" height="520" autosized="true">
+						<f:facet name="header">
+			            	<h:outputText styleClass="coluna"  value="Consulta Livro" />
+			        	</f:facet>
+						<br/>
+						<h:panelGrid columns="2" id="consulta">
+
+
+							<h:outputText value="ISBN: " styleClass="coluna"/>
+							<h:inputText value="#{manageMemberBooksController.livroConsulta.isbn}" readonly="true" style="font-size: 16px"/>
+
+							<h:outputText value="Título: " styleClass="coluna"/>
+							<h:inputText value="#{manageMemberBooksController.livroConsulta.titulo}" readonly="true" style="font-size: 16px"/>
+							
+							<h:outputText value="Editora: " styleClass="coluna"/>
+							<h:inputText value="#{manageMemberBooksController.livroConsulta.editora}" readonly="true" style="font-size: 16px"/>
+
+							<h:outputText value="Ano: " styleClass="coluna"/>
+							<h:inputText value="#{manageMemberBooksController.livroConsulta.ano}" readonly="true" style="font-size: 16px"/>
+
+							<h:outputText value="Local de Publicação: " styleClass="coluna"/>
+							<h:inputText value="#{manageMemberBooksController.livroConsulta.localPublicacao}" readonly="true" style="font-size: 16px"/>
+
+							<h:outputText value="Complemento: " styleClass="coluna"/>
+							<h:inputText value="#{manageMemberBooksController.livroConsulta.complemento}" readonly="true" style="font-size: 16px"/>
+
+						</h:panelGrid>
+						<br/>
+						<div align="center">
+							<h:outputText value="Autores" styleClass="coluna"/>
+							<rich:dataTable value="#{manageMemberBooksController.livroConsulta.autores}" var="autor"
+								iterationStatusVar="itC" id="tableAutor" rows="10">
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{itC.index+1}" styleClass="texto"/>
+			            		</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Nome Completo" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{autor.nome}" styleClass="texto"/>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Nome Referenciado" styleClass="coluna"/>
+									</f:facet>
+									<h:outputText value="#{autor.nomeReferencia}" styleClass="texto"/>
+								</rich:column>
+								
+								<rich:column>
+									<a4j:commandLink
+										render="formularioConsultaAutor" execute="@this"
+										oncomplete="#{rich:component('formularioConsultaAutor')}.show()">
+										<h:graphicImage value="imagens/consulta.gif" alt="consulte" />
+										<f:setPropertyActionListener
+											target="#{manageMemberBooksController.autorConsulta}" value="#{autor}" />
+									</a4j:commandLink>
+								</rich:column>
+								<f:facet name="footer">
+									<rich:dataScroller page="#{manageMemberBooksController.pageAutor}" />
+								</f:facet>
+							</rich:dataTable>
+						</div>
+
+						<br />
+
+						<a4j:commandButton value="Voltar"
+							onclick="voltar(); return false;"
+							oncomplete="#{rich:component('formularioConsulta')}.hide();"
+							style="font-size:18px; width:100px; height:30px"
+							styleClass="botao"/>
+					</rich:popupPanel>
+					
+					
+					<!-- FORMULARIO CONSULTA AUTOR -->
+
+					<rich:popupPanel id="formularioConsultaAutor"
+						domElementAttachment="parent" width="550" height="400" autosized="true">
+						<f:facet name="header">
+			            	<h:outputText styleClass="coluna"  value="Consulta Autor" />
+			        	</f:facet>
+						<br/>
+						<h:panelGrid columns="2" id="consultaAutor">
+							<h:outputText value="Nome Completo: " styleClass="coluna"/>
+							<h:inputText value="#{manageMemberBooksController.autorConsulta.nome}" readonly="true" style="font-size: 16px"/>
+
+							<h:outputText value="Nome Referenciado: " styleClass="coluna"/>
+							<h:inputText value="#{manageMemberBooksController.autorConsulta.nomeReferencia}" readonly="true" style="font-size: 16px"/>
+							
+							<h:outputText value="Sobre o autor: " styleClass="coluna"/>
+							<h:inputTextarea value="#{manageMemberBooksController.autorConsulta.resumo}" readonly="true" style="font-size: 16px; height: 200px; width: 300px"/>
+
+						</h:panelGrid>
+
+						<br />
+
+						<a4j:commandButton value="Voltar"
+							oncomplete="#{rich:component('formularioConsultaAutor')}.hide();"
+							style="font-size:18px; width:100px; height:30px"
+							styleClass="botao"/>
+					</rich:popupPanel>
+					
+					
+				</h:form>
+			</div>
+		</rich:panel>
+	</div>
+
+
+	<br />
+	<div align="center">
+		<rich:panel style="color:gray; width:420px; background-color:gray" id="mensagem">
+			<div align="center">
+				<h:outputText value="#{manageMemberBooksController.mensagem}" styleClass="msg" />
+			</div>
+		</rich:panel>
+	</div>
+
+
+	<br />
+	<div class="footer">
+		<rich:panel  style="color:#d3d3d3; background-color:#d3d3d3;">
+				<h:outputText value="Terms of Use, Copyright, and Privacy Policy / 2014 - Gabriel M. Miranda. All rights reserved." styleClass="coluna"/>
+			</rich:panel>
+	</div>
+	
+
+
+</h:body>
+
+</html>

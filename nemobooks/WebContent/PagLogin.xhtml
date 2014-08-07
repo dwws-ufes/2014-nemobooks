@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+		<title>Página Login</title>
+		
+	</h:head>
+	
+	
+	<h:body onload="#{manageUsersController.iniciar()}" 
+	styleClass="fundo">
+	
+	<style>
+		
+		.preto {
+			font-size: 20px; 
+			font-family: Arial; 
+			color: black;
+		}
+		
+		.branco {
+        	font-weight:bold; 
+        	font-size: 20px; 
+        	font-family: Arial; 
+        	color: white;
+        }
+        
+        .fundo {
+        	background-image:url('imagens/biblioteca.jpg');
+        	background-position: center;    
+        	background-attachment: fixed; 
+        	
+        }
+        
+	</style> 
+	 
+
+    <br/> <br/> <br/>
+    <div align="center">
+    	<img src="imagens/logoNemo2.png"/>
+	</div>
+	<br/> <br/> <br/>
+	
+	<div align="center" >
+	<h:form id="login">
+		<h:panelGrid columns="2" id="Panellogin">
+			<h:outputText value="Login: " styleClass="branco"/>
+			<h:inputText id="nome" 
+				value="#{manageUsersController.login}"
+				width="30" 
+				maxlength="2048" 
+				style="font-size: 20px; font-family: Arial; color: black;"
+				/>
+			<h:outputText value="Senha: " styleClass="branco"/>
+			<h:inputSecret id="senha"
+				value="#{manageUsersController.senha}" 
+				width="30" 
+				maxlength="2048" style="font-size: 20px; font-family: Arial; 
+				color: black;"
+				/>
+	    </h:panelGrid>
+	    <br/>
+	    <h:commandButton type="submit" 
+	        value="LOGIN"
+	        action="#{manageUsersController.logar}" 
+	        execute="login"
+	        style="font-size: 20px; font-family: Arial; color: black;"
+	        />
+	    <div align="center">
+	    	<h:outputText value="#{manageUsersController.mensagem}" style="color:white;font-size:16px; font: bold;"></h:outputText>
+	    </div>
+	    
+	    
+	</h:form>
+		   
+	</div>
+		
+	</h:body>
+
+</html>

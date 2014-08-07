@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://java.sun.com/xml/ns/persistence">
+  <persistence-unit name="NEMOBooks">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>java:/jboss/datasources/NEMOBooks</jta-data-source>
+		<class>br.ufes.inf.nemo.util.ejb3.persistence.PersistentObjectSupport</class>
+		<class>br.ufes.inf.nemo.controleLivro.cdp.Usuario</class>
+		<class>br.ufes.inf.nemo.controleLivro.cdp.Member</class>
+		<class>br.ufes.inf.nemo.controleLivro.cdp.Book</class>
+		<class>br.ufes.inf.nemo.controleLivro.cdp.Author</class>
+		<class>br.ufes.inf.nemo.controleLivro.cdp.Emprestimo</class>
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<properties>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
+			<property name="hibernate.show_sql" value="true"/>
+			<property name="hibernate.format_sql" value="true"/>
+		</properties>
+	</persistence-unit>
+</persistence>

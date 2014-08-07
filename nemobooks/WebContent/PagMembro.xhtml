@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Controle de Membros</title>
+	
+
+</h:head>
+<h:body onload="#{manageMembersController.iniciar()}"
+	styleClass="fundo">
+	<style>
+	
+.fundo{
+	background-image:url('imagens/pag4.jpg');
+	background-position: center;    
+    background-attachment: fixed; 
+}
+.titulo {
+	font-weight: bold;
+	font-size: 24px;
+	font-family: Arial;
+	color: white;
+}
+
+.botao {
+	font-weight: bold;
+	font-size: 20px;
+	font-family: Arial;
+	color: black;
+}
+
+.msg {
+	font-size: 18px;
+	font-family: Arial;
+	color: black;
+	font-weight: bold;
+}
+
+.msgErro {
+	font-size: 14px;
+	font-family: Arial;
+}
+
+.coluna {
+	font-size: 18px;
+	font-family: Arial;
+	font-weight: bold;
+}
+
+.footer {
+	position:absolute;
+	bottom:0;
+	width:99%;
+}
+
+.texto {
+	font-size: 18px;
+	font-family: Arial;
+}
+</style>
+
+
+	<rich:toolbar itemSeparator="grid" style="height:35px;">
+		<rich:toolbarGroup>
+			<a4j:commandButton style="height:25px; width:200px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaAutor}" execute="@this"
+				value="Controle de Autores" />
+			<a4j:commandButton style="height:25px; width:200px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaLivro}" execute="@this"
+				value="Controle de Livros" />
+			<a4j:commandButton style="height:25px; width:200px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaMembro}" execute="@this"
+				value="Controle de Membros" />
+		</rich:toolbarGroup>
+
+		<rich:toolbarGroup location="right">
+			<h:outputText styleClass="botao"
+				value="Usuário conectado: #{manageUsersController.usuario}" />
+			<a4j:commandButton style="height:25px; width:100px; font-size:16px"
+				styleClass="botao" type="button" action="#{manageUsersController.logout}"
+				execute="@this" value="Logout" />
+		</rich:toolbarGroup>
+	</rich:toolbar>
+
+	<br />
+	<div align="center">
+		<rich:panel
+			style="color:black; width:700px; background-image:url('imagens/headBg.png');">
+			<div align="center">
+
+				<h:outputText styleClass="titulo" value="CONTROLE DE MEMBROS"></h:outputText>
+
+			</div>
+			<br />
+
+			<a4j:status onstart="#{rich:component('popupProcessando')}.show()"
+				onstop="#{rich:component('popupProcessando')}.hide()" />
+			<div align="center">
+				<h:form id="form">
+					<rich:dataTable value="#{manageMembersController.membros}" var="membro"
+						iterationStatusVar="it" id="table" rows="15">
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#" styleClass="coluna"/>
+							</f:facet>
+							<h:outputText value="#{it.index+1}" styleClass="texto"/>
+	            		</rich:column>
+	            		<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Matrícula/SIAPE" styleClass="coluna"/>
+							</f:facet>
+							<h:outputText value="#{membro.matricula_Siape}" styleClass="texto"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Nome Completo" styleClass="coluna"/>
+							</f:facet>
+							<h:outputText value="#{membro.nomeCompleto}" styleClass="texto"/>
+						</rich:column>
+						
+						<rich:column>
+							<a4j:commandLink styleClass="no-decor" execute="@this"
+								render="@none"
+								oncomplete="#{rich:component('popupConfirmacao')}.show()">
+								<h:graphicImage value="imagens/delete.gif" alt="deletar" />
+								<a4j:param value="#{it.index}"
+									assignTo="#{manageMembersController.indiceMembro}" />
+							</a4j:commandLink>
+
+
+							<a4j:commandLink styleClass="no-decor" render="formularioEdicao"
+								execute="@this"
+								oncomplete="#{rich:component('formularioEdicao')}.show()">
+								<h:graphicImage value="imagens/edit.gif" alt="editar" />
+								<a4j:param value="#{it.index}"
+									assignTo="#{manageMembersController.indiceMembro}" />
+								<f:setPropertyActionListener
+									target="#{manageMembersController.membroEditado}" value="#{membro}" />
+							</a4j:commandLink>
+
+							<a4j:commandLink styleClass="no-decor"
+								render="formularioConsulta" execute="@this"
+								oncomplete="#{rich:component('formularioConsulta')}.show()">
+								<h:graphicImage value="imagens/consulta.gif" alt="consulte" />
+								<a4j:param value="#{it.index}"
+									assignTo="#{manageMembersController.indiceMembro}" />
+								<f:setPropertyActionListener
+									target="#{manageMembersController.membroConsulta}" value="#{membro}" />
+							</a4j:commandLink>
+
+
+						</rich:column>
+						<f:facet name="footer">
+							<rich:dataScroller page="#{manageMembersController.page}" />
+						</f:facet>
+					</rich:dataTable>
+
+				<!-- Funções JavaScript -->
+				
+					<a4j:jsFunction name="remove" action="#{manageMembersController.apagarMembro}"
+						render="table" execute="@this"
+						oncomplete="#{rich:component('popupConfirmacao')}.hide();}.show();" />
+
+					<a4j:jsFunction name="voltar" action="#{manageMembersController.atualizar}"
+						render="table" execute="@this"/>		
+					
+					<rich:popupPanel id="popupProcessando" autosized="true">
+						<h:graphicImage value="imagens/processando.gif" alt="ai" />
+	           			<h:outputText value="Processando..." styleClass="texto"/>
+	        </rich:popupPanel>
+
+			<rich:popupPanel id="popupConfirmacao" autosized="true">
+	           	<f:facet name="header">
+	            	<h:outputText styleClass="coluna" style="font-size:18px" value="Deseja mesmo excluir o membro?" />
+	        	</f:facet>
+	           	<h:panelGrid columns="3" id="confirmacaoExclusaoBotoes">
+					<a4j:commandButton value="Sim" onclick="remove(); return false;" style="font-size:16px; width:100px; height:30px"
+						styleClass="botao"/>
+					<h:outputText value="  "/>
+					<a4j:commandButton value="Não" style="font-size:16px; width:100px; height:30px"
+						styleClass="botao"
+						onclick="#{rich:component('popupConfirmacao')}.hide(); return false;" />
+				</h:panelGrid>
+			</rich:popupPanel>
+			
+			
+			<!-- Formulario Edicao -->
+
+					<rich:popupPanel header="Dados de membro" id="formularioEdicao"
+						domElementAttachment="parent" width="450" height="300">
+						<f:facet name="header">
+			            	<h:outputText styleClass="coluna" style="font-size:20px" value="Editar membro" />
+			        	</f:facet>
+						<br/>
+						<h:panelGrid columns="3" id="editGrid">
+
+
+							<h:outputText value="Nome Completo: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroEditado.nomeCompleto}"
+								id="nomeCompleto" required="true"
+								validatorMessage="Nome Inválido (Informe um nome entre 2 e 50 caracteres)"
+								converterMessage="Nome Inválido (Informe um nome entre 2 e 50 caracteres)"
+								requiredMessage="Digite o Nome" style="font-size:16px">
+								<f:validateLength minimum="2" maximum="50" />
+							</h:inputText>
+							<rich:message id="nomeMsg" for="nomeCompleto" styleClass="msgErro"/>
+							
+							<h:outputText value="Mátricula/SIAPE: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroEditado.matricula_Siape}"
+								id="matricula_Siape" required="true"
+								validatorMessage="Matricula/SIAPE Inválido"
+								converterMessage="Matricula/SIAPE Inválido"
+								requiredMessage="Digite a Matricula/SIAPE" style="font-size:16px">
+								<f:validateLength minimum="2" maximum="50" />
+							</h:inputText>
+							<rich:message id="matricula_SiapeMsg" for="matricula_Siape" styleClass="msgErro"/>
+							
+							<h:outputText value="Grau Acadêmico: " styleClass="coluna"/>
+							<rich:select id="tipos" value="#{manageMembersController.tipoNivel}"
+							style="font-size:16px" defaultLabel="selecione um nivel"
+							required="true" requiredMessage="Selecione o Nível de Escolaridade" rendered="true">
+								<f:selectItems value="#{manageMembersController.tipos}" styleClass="msgErro"></f:selectItems>						
+							</rich:select>
+							<rich:message id="tipoMsg" for="tipos" styleClass="msgErro"/>
+
+							
+							<h:outputText value="Professor PPGI: " styleClass="coluna"/>
+							<h:selectBooleanCheckbox value="#{manageMembersController.membroEditado.professorPPGI}"/>
+							<h:outputText/>
+							
+							
+							
+							<h:outputText value="Curriculo Lattes: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroEditado.curriculoLattes}"
+								id="curriculo" required="true"
+								validatorMessage="Curriculo Inválido"
+								converterMessage="Curriculo Inválido"
+								requiredMessage="Digite o Curriculo" style="font-size:16px">
+								<f:validateLength minimum="2" maximum="50" />
+							</h:inputText>
+							<rich:message id="curriculoMsg" for="curriculo" styleClass="msgErro"/>
+
+
+						</h:panelGrid>
+						<br/>
+						<h:panelGrid columns="3" id="editGridBotao">
+							<a4j:commandButton value="Alterar"
+								action="#{manageMembersController.alterarMembro}" render="table"
+								execute="formularioEdicao"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('formularioEdicao')}.hide();}.show();}" 
+								style="font-size:18px; width:100px; height:30px"
+								styleClass="botao"/>
+							<h:outputText value="   "/>
+							<a4j:commandButton value="Voltar"
+								style="font-size:18px; width:100px; height:30px"
+								styleClass="botao"
+								onclick="voltar(); return false;"
+								oncomplete="#{rich:component('formularioEdicao')}.hide();"/>
+						</h:panelGrid>
+					</rich:popupPanel>
+
+
+
+					<!-- Formulário Inclusao -->
+
+
+					<rich:popupPanel id="formularioInclusao" style="font-size:20px"
+						domElementAttachment="parent" width="600" height="350">
+						<f:facet name="header">
+			            	<h:outputText styleClass="coluna" style="font-size:24px" value="Dados membro" />
+			        	</f:facet>
+						<br/>
+						<h:panelGrid columns="3" id="criacao">
+
+
+							<h:outputText value="Nome Completo: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroCriado.nomeCompleto}"
+								id="nomeI" required="true"
+								validatorMessage="O nome deve ter entre 2 e 50 caracteres"
+								converterMessage="O nome deve ter entre 2 e 50 caracteres"
+								requiredMessage="Informe o nome" style="font-size:16px">
+								<f:validateLength minimum="2" maximum="50" />
+							</h:inputText>
+							<rich:message id="nomeMsgI" for="nomeI" styleClass="msgErro"/>
+
+							<h:outputText value="Matricula/SIAPE: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroCriado.matricula_Siape}"
+								id="matricula_SiapeI" required="true"
+								validatorMessage="Matricula/SIAPE Inválido"
+								converterMessage="Matricula/SIAPE Inválido"
+								requiredMessage="Informe a Matricula/SIAPE" style="font-size:16px">
+								<f:validateLength minimum="7" maximum="12" />
+							</h:inputText>
+							<rich:message id="matricula_SiapeMsgI" for="matricula_SiapeI" styleClass="msgErro"/>
+
+							<h:outputText value="Grau Acadêmico: " styleClass="coluna"/>
+							<rich:select id="tiposI" value="#{manageMembersController.tipoNivel}" defaultLabel="Selecione um Nível" required="true" requiredMessage="Selecione o Nível de Escolaridade" rendered="true">
+								<f:selectItems value="#{manageMembersController.tipos}" style="font-size:16px" styleClass="msgErro"/>						
+							</rich:select>
+							<rich:message id="tipoIMsg" for="tiposI" styleClass="msgErro"/>
+
+							
+							<h:outputText value="Professor PPGI: " styleClass="coluna"/>
+							<h:selectBooleanCheckbox value="#{manageMembersController.membroCriado.professorPPGI}"/>
+							<h:outputText/>
+							
+							<h:outputText value="Curriculo Lattes: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroCriado.curriculoLattes}"
+								id="curriculoI" required="true"
+								validatorMessage="Curriculo Inválido"
+								converterMessage="Curriculo Inválido"
+								requiredMessage="Digite o Curriculo" style="font-size:16px">
+								<f:validateLength minimum="2" maximum="50" />
+							</h:inputText>
+							<rich:message id="curriculoIMsg" for="curriculoI" styleClass="msgErro"/>
+							
+						</h:panelGrid>
+						
+						<br/>
+
+						<h:panelGrid columns="5" id="botoesCriacao">
+
+							<a4j:commandButton type="submit" value="Incluir"
+								action="#{manageMembersController.incluirMembro}" render="table"
+								execute="formularioInclusao"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('formularioInclusao')}.hide();}" 
+								style="font-size:18px; width:100px; height:30px"
+								styleClass="botao">
+							</a4j:commandButton>
+	
+							<h:outputText value="   "/>
+	
+	
+	
+							<a4j:commandButton execute="formularioInclusao" type="reset"
+								value="Limpar" 
+								style="font-size:18px; width:100px; height:30px"
+								styleClass="botao"/>
+								
+							<h:outputText value="   "/>
+							
+							
+							<a4j:commandButton value="Voltar"
+								onclick="voltar(); return false;" 
+								oncomplete="#{rich:component('formularioInclusao')}.hide();"
+								style="font-size:18px; width:100px; height:30px"
+								styleClass="botao"/>
+						</h:panelGrid>
+
+					</rich:popupPanel>
+
+
+					<!-- FORMULARIO CONSULTA -->
+
+					<rich:popupPanel id="formularioConsulta"
+						domElementAttachment="parent" width="500" height="300" autosized="true">
+						<f:facet name="header">
+			            	<h:outputText styleClass="coluna"  value="Consulta membro" />
+			        	</f:facet>
+						<br/>
+						<h:panelGrid columns="2" id="consulta">
+
+
+							<h:outputText value="Nome Completo: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroConsulta.nomeCompleto}" readonly="true" style="font-size: 16px"/>
+
+							<h:outputText value="Matricula/SIAPE: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroConsulta.matricula_Siape}" readonly="true" style="font-size: 16px"/>
+							
+							<h:outputText value="Grau Acadêmico: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroConsulta.nivel}" readonly="true" style="font-size: 16px"/>
+
+
+							<h:outputText value="Professor PPGI: " styleClass="coluna"/>
+							<h:inputText value="#{manageMembersController.membroConsulta.ehProfessor()}" readonly="true" style="font-size: 16px"/>
+
+							<h:outputText value="Curriculo Lattes: " styleClass="coluna"/>
+							<h:outputLink value="#{manageMembersController.membroConsulta.curriculoLattes}" target="www.google.com"  readonly="true" style="font-size: 16px">
+								<h:outputText value="#{manageMembersController.membroConsulta.curriculoLattes}" />
+							</h:outputLink>
+
+						</h:panelGrid>
+
+						<br />
+
+						<a4j:commandButton value="Voltar"
+							onclick="voltar(); return false;"
+							oncomplete="#{rich:component('formularioConsulta')}.hide();"
+							style="font-size:18px; width:100px; height:30px"
+							styleClass="botao"/>
+					</rich:popupPanel>
+
+
+				</h:form>
+			</div>
+
+			<br />
+
+			<div align="center">
+
+				<h:commandButton value="Incluir Membro" style="height:30px; width:170px; font-size:16px"
+							styleClass="botao">
+					<rich:componentControl target="formularioInclusao" operation="show" />
+				</h:commandButton>
+			</div>
+
+		</rich:panel>
+	</div>
+
+
+	<br />
+	<div align="center">
+		<rich:panel style="color:gray; width:420px; background-color:gray">
+			<div align="center">
+				<h:outputText value="#{manageMembersController.mensagem}" styleClass="msg" />
+			</div>
+		</rich:panel>
+	</div>
+
+
+	<br />
+	<div class="footer">
+		<rich:panel  style="color:#d3d3d3; background-color:#d3d3d3;">
+				<h:outputText value="Terms of Use, Copyright, and Privacy Policy / 2014 - Gabriel M. Miranda. All rights reserved." styleClass="coluna"/>
+			</rich:panel>
+	</div>
+	
+
+
+</h:body>
+
+</html>

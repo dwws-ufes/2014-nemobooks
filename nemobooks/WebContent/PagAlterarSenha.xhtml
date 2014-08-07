@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+		<title>Página Alterar Senha</title>
+		
+	</h:head>
+	
+	
+	<h:body styleClass="fundo">
+	
+	<style>
+		
+		.fundo{
+	background-image:url('imagens/alterarsenha.jpg');
+	background-position: center;    
+    background-attachment: fixed; 
+}
+.titulo {
+	font-weight: bold;
+	font-size: 24px;
+	font-family: Arial;
+	color: white;
+}
+
+.botao {
+	font-weight: bold;
+	font-size: 20px;
+	font-family: Arial;
+	color: black;
+}
+
+.msg {
+	font-size: 18px;
+	font-family: Arial;
+	color: black;
+	font-weight: bold;
+}
+
+.msgErro {
+	font-size: 14px;
+	font-family: Arial;
+}
+
+.coluna {
+	font-size: 18px;
+	font-family: Arial;
+	font-weight: bold;
+	color: white;
+}
+
+.footer {
+	position:absolute;
+	bottom:0;
+	width:99%;
+}
+
+.texto {
+	font-size: 18px;
+	font-family: Arial;
+}
+        
+	</style> 
+	 
+
+    <rich:toolbar itemSeparator="grid" style="height:35px;">
+		<rich:toolbarGroup>
+			<a4j:commandButton style="height:25px; width:230px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaLivrosMembro}" execute="@this"
+				value="Controle de Empréstimos" />
+			<a4j:commandButton style="height:25px; width:130px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaHistorico}" execute="@this"
+				value="Histórico" />
+		</rich:toolbarGroup>
+
+		<rich:toolbarGroup location="right">
+			<h:outputText styleClass="botao"
+				value="Usuário conectado: #{manageUsersController.membro}" />
+			<a4j:commandButton style="height:25px; width:150px; font-size:16px"
+				styleClass="botao" type="button" action="#{manageUsersController.abrirPaginaAlterarSenha}"
+				execute="@this" value="Alterar Senha" />
+			<a4j:commandButton style="height:25px; width:100px; font-size:16px"
+				styleClass="botao" type="button" action="#{manageUsersController.logout}"
+				execute="@this" value="Logout" />
+		</rich:toolbarGroup>
+	</rich:toolbar>
+	
+	<br />
+	<div align="center">
+		<rich:panel id="alterarSenha"
+			style="color:black; width:600px; background-image:url('imagens/headBg.png');">
+			<div align="center">
+
+				<h:outputText styleClass="titulo" value="ALTERAR SENHA"></h:outputText>
+
+			</div>
+			<br />
+			<a4j:status onstart="#{rich:component('popupProcessando')}.show()"
+				onstop="#{rich:component('popupProcessando')}.hide()" />
+			<h:form id="form">
+				<h:panelGrid columns="3" id="alterar">
+					<h:outputText value="Senha atual: " styleClass="coluna"/>
+					<h:inputSecret value="#{manageUsersController.senhaAtual}"
+						id="senhaAtual" required="true"
+						requiredMessage="Informe a senha atual" style="font-size:16px">
+					</h:inputSecret>
+					<rich:message id="senhaAtualMsg" for="senhaAtual" styleClass="msgErro"/>
+	
+					<h:outputText value="Nova senha: " styleClass="coluna"/>
+					<h:inputSecret value="#{manageUsersController.novaSenha}"
+						id="novaSenha" required="true"
+						validatorMessage="A senha deve ter no minimo 6 caracteres"
+						converterMessage="A senha deve ter no minimo 6 caracteres"
+						requiredMessage="Informe a nova senha" style="font-size:16px">
+						<f:validateLength minimum="6" maximum="1000" />
+					</h:inputSecret>
+					<rich:message id="novaSenhaMsg" for="novaSenha" styleClass="msgErro"/>
+	
+					<h:outputText value="Confirmar senha: " styleClass="coluna"/>
+					<h:inputSecret value="#{manageUsersController.confirmarSenha}"
+						id="confirmarSenha" required="true"
+						validatorMessage="A senha deve ter no minimo 6 caracteres"
+						converterMessage="A senha deve ter no minimo 6 caracteres"
+						requiredMessage="Confirme a senha" style="font-size:16px">
+						<f:validateLength minimum="6" maximum="1000" />
+					</h:inputSecret>
+					<rich:message id="confirmarSenhaMsg" for="confirmarSenha" styleClass="msgErro"/>
+				</h:panelGrid>
+				<br />
+				<div align="center">
+					<a4j:commandButton type="submit" value="Alterar"
+						action="#{manageUsersController.alterarSenha}" render="mensagemAlterar, form"
+						execute="form"
+						style="font-size:18px; width:100px; height:30px"
+						styleClass="botao">
+					</a4j:commandButton>
+				</div>
+				<br />
+				<div align="center">
+					<rich:panel style="color:gray; width:420px; background-color:gray">
+						<div align="center">
+							<h:outputText value="#{manageUsersController.mensagemAlterar}" styleClass="msg" />
+						</div>
+					</rich:panel>
+				</div>
+				</h:form>
+			</rich:panel>	
+		
+		
+	<br />
+</div>
+	<div class="footer">
+		<rich:panel  style="color:#d3d3d3; background-color:#d3d3d3;">
+				<h:outputText value="Terms of Use, Copyright, and Privacy Policy / 2014 - Gabriel M. Miranda. All rights reserved." styleClass="coluna" style="color:black"/>
+			</rich:panel>
+	</div>
+	    
+	    
+	
+		
+	</h:body>
+
+</html>

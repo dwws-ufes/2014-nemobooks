@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Livros do Membro</title>
+	
+
+</h:head>
+<h:body onload="#{manageHistoricoController.iniciar()}"
+	styleClass="fundo">
+	<style>
+	
+.fundo{
+	background-image:url('imagens/biblioteca3.jpg');
+	background-position: center;    
+    background-attachment: fixed; 
+}
+.titulo {
+	font-weight: bold;
+	font-size: 24px;
+	font-family: Arial;
+	color: white;
+}
+
+.botao {
+	font-weight: bold;
+	font-size: 20px;
+	font-family: Arial;
+	color: black;
+}
+
+.msg {
+	font-size: 18px;
+	font-family: Arial;
+	color: black;
+	font-weight: bold;
+}
+
+.msgErro {
+	font-size: 14px;
+	font-family: Arial;
+}
+
+.coluna {
+	font-size: 18px;
+	font-family: Arial;
+	font-weight: bold;
+}
+
+.footer {
+	position:absolute;
+	bottom:0;
+	width:99%;
+}
+
+.texto {
+	font-size: 18px;
+	font-family: Arial;
+	text-align: center;
+}
+</style>
+
+
+	<rich:toolbar itemSeparator="grid" style="height:35px;">
+		<rich:toolbarGroup>
+			<a4j:commandButton style="height:25px; width:230px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaLivrosMembro}" execute="@this"
+				value="Controle de Empréstimos" />
+			<a4j:commandButton style="height:25px; width:130px; font-size:16px"
+				styleClass="botao" type="button"
+				action="#{manageUsersController.abrirPaginaHistorico}" execute="@this"
+				value="Histórico" />
+		</rich:toolbarGroup>
+
+		<rich:toolbarGroup location="right">
+			<h:outputText styleClass="botao"
+				value="Usuário conectado: #{manageUsersController.membro}" />
+			<a4j:commandButton style="height:25px; width:150px; font-size:16px"
+				styleClass="botao" type="button" action="#{manageUsersController.abrirPaginaAlterarSenha}"
+				execute="@this" value="Alterar Senha" />
+			<a4j:commandButton style="height:25px; width:100px; font-size:16px"
+				styleClass="botao" type="button" action="#{manageUsersController.logout}"
+				execute="@this" value="Logout" />
+		</rich:toolbarGroup>
+	</rich:toolbar>
+
+	<br />
+	<div align="center">
+		<rich:panel
+			style="color:black; width:600px; background-image:url('imagens/headBg.png');">
+			<div align="center">
+
+				<h:outputText styleClass="titulo" value="HISTÓRICO DE LIVROS"></h:outputText>
+
+			</div>
+			<br />
+
+			<a4j:status onstart="#{rich:component('popupProcessando')}.show()"
+				onstop="#{rich:component('popupProcessando')}.hide()" />
+			<div align="center">
+				<h:form id="form">
+					<rich:panel style="color:black">
+						<rich:dataTable value="#{manageHistoricoController.historico}" var="emprestimo"
+							iterationStatusVar="itAL" id="tableHistorico" rows="10">
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Livro" styleClass="coluna"/>
+								</f:facet>
+								<h:outputText value="#{emprestimo.livro}" styleClass="texto"/>
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Data do Empréstimo" styleClass="coluna"/>
+								</f:facet>
+								<h:outputText value="#{emprestimo.dataInicioFormatada()}" styleClass="texto"/>
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Data da Devolução" styleClass="coluna"/>
+								</f:facet>
+								<h:outputText value="#{emprestimo.dataFimFormatada()}" styleClass="texto"/>
+							</rich:column>
+							<f:facet name="footer">
+								<rich:dataScroller page="#{manageHistoricoController.page}" />
+							</f:facet>
+						</rich:dataTable>
+					</rich:panel>
+					<rich:popupPanel id="popupProcessando" autosized="true">
+						<h:graphicImage value="imagens/processando.gif" alt="ai" />
+	           			<h:outputText value="Processando..." styleClass="texto"/>
+	        		</rich:popupPanel>
+				</h:form>
+			</div>
+		</rich:panel>
+	</div>
+
+	<br />
+	<div class="footer">
+		<rich:panel  style="color:#d3d3d3; background-color:#d3d3d3;">
+				<h:outputText value="Terms of Use, Copyright, and Privacy Policy / 2014 - Gabriel M. Miranda. All rights reserved." styleClass="coluna"/>
+			</rich:panel>
+	</div>
+	
+
+
+</h:body>
+
+</html>
